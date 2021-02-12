@@ -4,10 +4,20 @@
 //				ПМО вычислительного модуля  на базе микроЭВМ "КРЕДО-3VS".
 //==================================================================
 
-unsigned short w=0;
-char b=0;
+void StatusRestart(){
+	outpw(Index_VIC,VICR6);
+	outp(Data_VIC,(VICR_RESTART ^ 0x80)); //выключили прерывание на VIC (старший разряд в 1)
+	
+	outpw(Index_VIC,VICR6);
+	outp(Data_VIC,(VICR_RESTART));  //включили прерывание на VIC (старший разряд в 0)
+	
+	inp(STATUS_ID);
+	outp(STATUS_ID ,0xAA);
+}
 
-void init(){
+
+
+void Init(){
 
 //******************************************************************
 //       НАСТРАИВАЕМ LIM и VME - окна, VME - страницы

@@ -160,8 +160,36 @@
  #define RTC_0D		   0x000D //Регистр статуса D RTC
  
  //_______________________________
+ #define IRQ					  0x0006
+ #define RV_VME_BASE_ADD_RAM	  0x2400
+ #define RV_VME_BASE_ADD_RAM_DATA (0x000C | (IRQ<<8))   //номер линии прерывания пишется во второй байт
+ 
+ #define VICR_RESTART			  (0x78 | IRQ)
+ 
+ #define RV_VME_STATUS_ID	  	  0x2402
+ #define RV_VME_CNTR_EXT_INT	  0x2404
+ 
+ #define zw(s1,s2) *(cpAshort+((s1)>>1)) = ( ( (s2) & 0xFF ) << 8 ) | ( ((s2) >> 8 ) & 0xFF )
+ #define zzw(a,w) *(cpBshort+(a>>1))=((w & 0xFF)<<8)|((w >> 8) & 0xFF)
+ 
+ 
+ #define PSSR		0x0003 //Регистр состояния линии запросов на
+ #define VME_IRQ_N  0x0005
+ 
+ #define Index_FPGA     0x0028 //Регистры микросхемы интегрального
+ #define Data_FPGA      0x002c //обрамления 1: Индекс и Данные.
+ 
+ unsigned short w=0;
+ char b=0;
+ 
  pid_t proxy=0;
  unsigned counter=0;
+ 
+ unsigned baseA=0,baseB=0;
+ char __far *cpA=NULL;
+ char __far *cpB=NULL;
+ unsigned short __far *cpAshort;
+ unsigned short __far *cpBshort;
  
  
  
