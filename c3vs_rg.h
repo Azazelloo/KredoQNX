@@ -168,9 +168,15 @@
  
  #define RV_VME_STATUS_ID	  	  0x2402
  #define RV_VME_CNTR_EXT_INT	  0x2404
+ #define RV_VME_INT	  			  0x2406
  
- #define zw(s1,s2) *(cpAshort+((s1)>>1)) = ( ( (s2) & 0xFF ) << 8 ) | ( ((s2) >> 8 ) & 0xFF )
+ //#define zw(s1,s2) *(cpAshort+((s1)>>1)) = ( ( (s2) & 0xFF ) << 8 ) | ( ((s2) >> 8 ) & 0xFF )
+ 
+ #define zw(a,w) *(cpAshort+(a>>1))=((w & 0xFF)<<8)|((w >> 8) & 0xFF)
  #define zzw(a,w) *(cpBshort+(a>>1))=((w & 0xFF)<<8)|((w >> 8) & 0xFF)
+ 
+ #define cw(a,w) w=(((*(cpAshort+(a>>1))) & 0xFF)<<8)|(((*(cpAshort+(a>>1))) >> 8) & 0xFF)
+ #define ccw(a,w) w=(((*(cpBshort+(a>>1))) & 0xFF)<<8)|(((*(cpBshort+(a>>1))) >> 8) & 0xFF)
  
  
  #define PSSR		0x0003 //Регистр состояния линии запросов на

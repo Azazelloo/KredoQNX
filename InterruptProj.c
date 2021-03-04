@@ -19,7 +19,7 @@ pid_t far handler(){
 
 void main(){
 	int id=0,i=0;
-	unsigned short data;
+	unsigned short data,flag;
 	
 	setprio(0,20); //приоритет процесса
 	Init();
@@ -37,32 +37,50 @@ void main(){
 		printf( " Unable to attach proxy. " );
         return;
 	}
-	if((id = qnx_hint_attach( 11, &handler, FP_SEG(&counter))) == -1 ){
+	if((id = qnx_hint_attach( 11, &handler, FP_SEG(&counter))) == -1 ){ //цепляем 11 прерывание
 		printf( "Unable to attach interrupt." );
         return;
 	}
 	
 //_____установка регистров
 	data=RV_VME_BASE_ADD_RAM_DATA;
-	zzw(RV_VME_BASE_ADD_RAM,data); //устанавлием источник прерывания IRQ6
+	zzw(RV_VME_BASE_ADD_RAM,data); //устанавливаем источник прерывания IRQ6
 	
 	data=0x3;
-	zzw(RV_VME_CNTR_EXT_INT,data); //устанавлием разряды признак и SYSFAIL в 1
+	zzw(RV_VME_CNTR_EXT_INT,data); //устанавливаем разряды признак и SYSFAIL в 1
 
 	StatusRestart();
 	
+
+
+	
 //_____вывод 
-	printf("Start...\n");
+	printf("Waiting interrupt from Vulkan...\n");
 	
-	for( i = 0 ; i < 10 ; ++i ) {
-	
+	for( i = 0 ; i < 1 ; ++i ) {
+		
+	 //_____отправляем прерывание на Вулкан
+	  printf("Send interrupt on Vulkan...\n");
+	  data=0;
+	  zzw(RV_VME_INT,data);
+	  data=0x1;
+	  zzw(RV_VME_INT,data);
+
+	//_____ждем ответного прерывания от Вулкана
       Receive( proxy, 0, 0 );
 	  
-	  printf("statusID ->%d\n",inp(STATUS_ID)) ; 
-      printf( "check_proxy = %d\n",i );
-	  
-	  StatusRestart();
+	//_____ обработка
+	 printf("statusID ->%d\n",inp(STATUS_ID)) ; 
+     printf( "check_proxy = %d\n",i );
+
+	  StatusRestart(); 
     }
+	
+	for(i=0;i<5;i++){
+		ccw(0x3060+(i<<1),flag); // читаем записанные вулканом регистры +0x60
+		printf("xuinya_%d -> %x\n",i,flag) ;
+	}
+	
 	
     qnx_hint_detach( id );
 }
